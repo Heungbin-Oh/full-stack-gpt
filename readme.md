@@ -1,6 +1,6 @@
 # DocumentGPT
 
-A Streamlit application to interact with documents using OpenAI's GPT-3 and LangChain.
+A Streamlit application to interact with documents using OpenAI's GPT-3.5 and LangChain.
 
 ## Setup
 
@@ -23,7 +23,7 @@ A Streamlit application to interact with documents using OpenAI's GPT-3 and Lang
 
 4. **Run the Streamlit app**:
     ```bash
-    streamlit run app.py
+    streamlit run Home.py
     ```
 
 5. **API Key Management**:
