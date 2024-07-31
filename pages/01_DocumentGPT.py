@@ -8,13 +8,13 @@ from langchain.storage import LocalFileStore
 from langchain.memory import ConversationSummaryBufferMemory
 
 from langchain.callbacks.base import BaseCallbackHandler
-from langchain_community.document_loaders import UnstructuredFileLoader
+from langchain.document_loaders import UnstructuredFileLoader
 from langchain.embeddings import CacheBackedEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
 from langchain.storage import LocalFileStore
 from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores.faiss import FAISS
 
 # Streamlit Page Configuration
 st.set_page_config(
