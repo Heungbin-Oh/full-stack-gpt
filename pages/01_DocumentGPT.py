@@ -1,7 +1,8 @@
+import json
 import streamlit as st
 import os
 
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.storage import LocalFileStore
 from langchain.memory import ConversationSummaryBufferMemory
@@ -21,15 +22,51 @@ st.set_page_config(
     page_icon="📃",
 )
 
+# Function to load API keys from a file
+
+
+def load_api_keys(filepath):
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as file:
+            keys = json.load(file)
+            return keys.get("OPENAI_API_KEY"), keys.get("LANGCHAIN_API_KEY")
+    return None, None
+
+# Function to save API keys to a file
+
+
+def save_api_keys(filepath, openai_key, langchain_key):
+    with open(filepath, 'w') as file:
+        keys = {
+            "OPENAI_API_KEY": openai_key,
+            "LANGCHAIN_API_KEY": langchain_key
+        }
+        json.dump(keys, file)
+
+
+# Set the file path for storing API keys
+api_key_filepath = os.path.expanduser("~/.api_keys.json")
+
+# Load API keys if they exist
+openai_api_key, langchain_api_key = load_api_keys(api_key_filepath)
+
+# Sidebar inputs for API keys if they are not loaded
+if not openai_api_key or not langchain_api_key:
+    st.sidebar.write("Enter your API keys to save them for future use.")
+    openai_api_key = st.sidebar.text_input(
+        "Enter your OpenAI API Key:", type="password")
+    langchain_api_key = st.sidebar.text_input(
+        "Enter your LangChain API Key:", type="password")
+
+    # Save API keys if provided by the user
+    if openai_api_key and langchain_api_key:
+        save_api_keys(api_key_filepath, openai_api_key, langchain_api_key)
+        st.sidebar.success("API keys saved successfully!")
+
 # Ensure the directories exist
 os.makedirs("./.cache/files/", exist_ok=True)
 os.makedirs("./.cache/embeddings/", exist_ok=True)
 
-# API Key Inputs
-openai_api_key = st.sidebar.text_input(
-    "Enter your OpenAI API Key:", type="password")
-langchain_api_key = st.sidebar.text_input(
-    "Enter your LangChain API Key:", type="password")
 
 if openai_api_key and langchain_api_key:
     # Set LangChain API key as environment variable
