@@ -1,239 +1,157 @@
-import json
-import streamlit as st
-import os
-
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.storage import LocalFileStore
-from langchain.memory import ConversationSummaryBufferMemory
-
-from langchain.callbacks.base import BaseCallbackHandler
+# Import necessary libraries
+from langchain.prompts import ChatPromptTemplate
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.embeddings import CacheBackedEmbeddings, OpenAIEmbeddings
 from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
 from langchain.storage import LocalFileStore
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores.faiss import FAISS
+from langchain.chat_models import ChatOpenAI
+from langchain.callbacks.base import BaseCallbackHandler
+import streamlit as st
 
-# Streamlit Page Configuration
+# Streamlit page configuration
 st.set_page_config(
     page_title="DocumentGPT",
     page_icon="📃",
 )
 
-# Function to load API keys from a file
+# Callback handler for streaming responses
 
 
-def load_api_keys(filepath):
-    if os.path.exists(filepath):
-        with open(filepath, 'r') as file:
-            keys = json.load(file)
-            return keys.get("OPENAI_API_KEY"), keys.get("LANGCHAIN_API_KEY")
-    return None, None
+class ChatCallbackHandler(BaseCallbackHandler):
+    message = ""
 
-# Function to save API keys to a file
+    def on_llm_start(self, *args, **kwargs):
+        self.message_box = st.empty()
 
+    def on_llm_end(self, *args, **kwargs):
+        save_message(self.message, "ai")
 
-def save_api_keys(filepath, openai_key, langchain_key):
-    with open(filepath, 'w') as file:
-        keys = {
-            "OPENAI_API_KEY": openai_key,
-            "LANGCHAIN_API_KEY": langchain_key
-        }
-        json.dump(keys, file)
+    def on_llm_new_token(self, token, *args, **kwargs):
+        self.message += token
+        self.message_box.markdown(self.message)
 
 
-# Set the file path for storing API keys
-api_key_filepath = os.path.expanduser("~/.api_keys.json")
+# ChatOpenAI configuration
+llm = ChatOpenAI(
+    temperature=0.1,
+    streaming=True,
+    callbacks=[
+        ChatCallbackHandler(),
+    ],
+)
 
-# Load API keys if they exist
-openai_api_key, langchain_api_key = load_api_keys(api_key_filepath)
-
-# Sidebar inputs for API keys if they are not loaded
-if not openai_api_key or not langchain_api_key:
-    st.sidebar.write("Enter your API keys to save them for future use.")
-    openai_api_key = st.sidebar.text_input(
-        "Enter your OpenAI API Key:", type="password")
-    langchain_api_key = st.sidebar.text_input(
-        "Enter your LangChain API Key:", type="password")
-
-    # Save API keys if provided by the user
-    if openai_api_key and langchain_api_key:
-        save_api_keys(api_key_filepath, openai_api_key, langchain_api_key)
-        st.sidebar.success("API keys saved successfully!")
-
-# Ensure the directories exist
-os.makedirs("./.cache/files/", exist_ok=True)
-os.makedirs("./.cache/embeddings/", exist_ok=True)
+# Function to embed file
 
 
-if openai_api_key and langchain_api_key:
-    # Set LangChain API key as environment variable
-    os.environ["LANGCHAIN_API_KEY"] = langchain_api_key
-
-    # Define Classes and Functions
-
-    # Chat Callback Handler Class
-    class ChatCallbackHandler(BaseCallbackHandler):
-        message = ""
-
-        def on_llm_start(self, *args, **kwargs):
-            self.message_box = st.empty()
-
-        def on_llm_end(self, *args, **kwargs):
-            save_message(self.message, "ai")
-
-        def on_llm_new_token(self, token, *args, **kwargs):
-            self.message += token
-            self.message_box.markdown(self.message)
-
-    if "memory" not in st.session_state:
-        st.session_state.memory = ChatCallbackHandler()
-
-    # LLM Initialization
-    def get_llm(api_key):
-        return ChatOpenAI(
-            api_key=api_key,
-            temperature=0.1,
-            streaming=True,
-            callbacks=[
-                ChatCallbackHandler(),
-            ],
-        )
-
-    # Memory Initialization
-    @st.cache_resource
-    def init_memory(_llm_for_memory):
-        return ConversationSummaryBufferMemory(
-            llm=_llm_for_memory,
-            max_token_limit=120,
-            memory_key="history",
-            return_messages=True
-        )
-
-    # Embed File
-    @st.cache_resource(show_spinner="Embedding file...")
-    def embed_file(file, openai_api_key):
-        file_content = file.read()
-        file_path = f"./.cache/files/{file.name}"
-        with open(file_path, "wb") as f:
-            f.write(file_content)
-        cache_dir = LocalFileStore(f"./.cache/embeddings/{file.name}")
-        splitter = CharacterTextSplitter.from_tiktoken_encoder(
-            separator="\n",
-            chunk_size=600,
-            chunk_overlap=100,
-        )
-        loader = UnstructuredFileLoader(file_path)
-        docs = loader.load_and_split(text_splitter=splitter)
-        embeddings = OpenAIEmbeddings(api_key=openai_api_key)
-        cached_embeddings = CacheBackedEmbeddings.from_bytes_store(
-            embeddings, cache_dir)
-        vectorstore = FAISS.from_documents(docs, cached_embeddings)
-        retriever = vectorstore.as_retriever()
-        return retriever
-
-    # Save Message
-    def save_message(message, role):
-        st.session_state["messages"].append({"message": message, "role": role})
-
-    # Send Message
-    def send_message(message, role, save=True):
-        with st.chat_message(role):
-            st.markdown(message)
-        if save:
-            save_message(message, role)
-
-    # Paint History
-    def paint_history():
-        for message in st.session_state["messages"]:
-            send_message(
-                message["message"],
-                message["role"],
-                save=False,
-            )
-
-    # Format Documents
-    def format_docs(docs):
-        return "\n\n".join(document.page_content for document in docs)
-
-    # Load Memory
-    def load_memory(_):
-        return memory.load_memory_variables({})["history"]
-
-    # Clear Memory
-    def clear_memory():
-        st.session_state["messages"] = []
-        memory.clear()
-
-    # Initialize LLM and Memory
-    llm = get_llm(openai_api_key)
-    llm_for_memory = get_llm(openai_api_key)
-    memory = init_memory(llm_for_memory)
-
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            (
-                "system",
-                """
-                Answer the question using ONLY the following context. If you don't know the answer just say you don't know. DON'T make anything up.
-                
-                Context: {context}
-                """,
-            ),
-            MessagesPlaceholder(variable_name="history"),
-            ("human", "{question}"),
-        ]
+@st.cache_resource(show_spinner="Embedding file...")
+def embed_file(file):
+    file_content = file.read()
+    file_path = f"./.cache/files/{file.name}"
+    with open(file_path, "wb") as f:
+        f.write(file_content)
+    cache_dir = LocalFileStore(f"./.cache/embeddings/{file.name}")
+    splitter = CharacterTextSplitter.from_tiktoken_encoder(
+        separator="\n",
+        chunk_size=600,
+        chunk_overlap=100,
     )
+    loader = UnstructuredFileLoader(file_path)
+    docs = loader.load_and_split(text_splitter=splitter)
+    embeddings = OpenAIEmbeddings()
+    cached_embeddings = CacheBackedEmbeddings.from_bytes_store(
+        embeddings, cache_dir)
+    vectorstore = FAISS.from_documents(docs, cached_embeddings)
+    retriever = vectorstore.as_retriever()
+    return retriever
 
-    # Streamlit App Title and Description
-    st.title("DocumentGPT")
+# Function to save messages to session state
 
-    st.markdown(
-        """
-    Welcome!
-                
-    Use this chatbot to ask questions to an AI about your files!
 
-    Upload your files on the sidebar.
+def save_message(message, role):
+    st.session_state["messages"].append({"message": message, "role": role})
+
+# Function to send and display messages
+
+
+def send_message(message, role, save=True):
+    with st.chat_message(role):
+        st.markdown(message)
+    if save:
+        save_message(message, role)
+
+# Function to display chat history
+
+
+def paint_history():
+    for message in st.session_state["messages"]:
+        send_message(
+            message["message"],
+            message["role"],
+            save=False,
+        )
+
+# Function to format documents
+
+
+def format_docs(docs):
+    return "\n\n".join(document.page_content for document in docs)
+
+
+# ChatPromptTemplate configuration
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+            Answer the question using ONLY the following context. If you don't know the answer just say you don't know. DON'T make anything up.
+            
+            Context: {context}
+            """,
+        ),
+        ("human", "{question}"),
+    ]
+)
+
+# Streamlit app title and description
+st.title("DocumentGPT")
+st.markdown(
     """
+Welcome!
+            
+Use this chatbot to ask questions to an AI about your files!
+
+Upload your files on the sidebar.
+"""
+)
+
+# Sidebar file uploader
+with st.sidebar:
+    file = st.file_uploader(
+        "Upload a .txt .pdf or .docx file",
+        type=["pdf", "txt", "docx"],
     )
 
-    # Sidebar File Uploader
-    with st.sidebar:
-        file = st.file_uploader(
-            "Upload a .txt .pdf or .docx file",
-            type=["pdf", "txt", "docx"],
-            on_change=clear_memory,
+# Main app logic
+if file:
+    retriever = embed_file(file)
+    send_message("I'm ready! Ask away!", "ai", save=False)
+    paint_history()
+    message = st.chat_input("Ask anything about your file...")
+    if message:
+        send_message(message, "human")
+        chain = (
+            {
+                "context": retriever | RunnableLambda(format_docs),
+                "question": RunnablePassthrough(),
+            }
+            | prompt
+            | llm
         )
+        with st.chat_message("ai"):
+            chain.invoke(message)
 
-    # File Handling and Chat Interface
-    if file:
-        retriever = embed_file(file, openai_api_key)
-        send_message("I'm ready! Ask away!", "ai", save=False)
-        paint_history()
-        message = st.chat_input("Ask anything about your file...")
-        if message:
-            send_message(message, "human")
-            chain = (
-                {
-                    "context": retriever | RunnableLambda(format_docs),
-                    "history": RunnableLambda(load_memory),
-                    "question": RunnablePassthrough(),
-                }
-                | prompt
-                | llm
-            )
-            with st.chat_message("ai"):
-                response = chain.invoke(message)
-
-            memory.save_context({"input": message}, {
-                                "output": response.content})
-
-    # Initialize the session if user changes the file
-    else:
-        st.session_state["messages"] = []
-        clear_memory()
+# Initialize session state messages if no file is uploaded
 else:
-    st.warning(
-        "Please enter your OpenAI API key and LangChain API key in the sidebar to proceed.")
+    st.session_state["messages"] = []
