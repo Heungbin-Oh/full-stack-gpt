@@ -32,7 +32,7 @@ st.title("QuizGPT")
 # Initialize the language model with specified parameters
 llm = ChatOpenAI(
     temperature=0.1,
-    model="gpt-3.5-turbo-1106",
+    model="gpt-3.5-turbo-0125",
     streaming=True,
     callbacks=[StreamingStdOutCallbackHandler()],
 )
@@ -233,7 +233,7 @@ def split_file(file):
 # Function to run the quiz generation chain
 
 
-@st.cache_resource(show_spinner="Making quiz...")
+@st.cache_data(show_spinner="Making quiz...")
 def run_quiz_chain(_docs, topic):
     chain = {"context": questions_chain} | formatting_chain | output_parser
     return chain.invoke(_docs)
@@ -243,7 +243,7 @@ def run_quiz_chain(_docs, topic):
 
 @st.cache_resource(show_spinner="Searching Wikipedia...")
 def wiki_search(term):
-    retriever = WikipediaRetriever(top_k_results=5)
+    retriever = WikipediaRetriever(top_k_results=3)
     docs = retriever.get_relevant_documents(term)
     return docs
 
@@ -283,15 +283,15 @@ if not docs:
     )
 else:
     response = run_quiz_chain(docs, topic if topic else file.name)
-
     with st.form("questions_form"):
         correct_answer = 0
-        for question in response["questions"]:
+        for idx, question in enumerate(response["questions"]):
             st.write(question["question"])
             value = st.radio(
                 "Select an option.",
                 [answer["answer"] for answer in question["answers"]],
                 index=None,
+                key=f"question_{idx}_{st.session_state.get('quiz_count', 0)}"
             )
             if {"answer": value, "correct": True} in question["answers"]:
                 st.success("Correct!")
@@ -303,4 +303,13 @@ else:
                         st.success("Correct answer: " + answer["answer"])
         st.write("")
         st.write("Score: ", correct_answer, " / ", len(response["questions"]))
+
         button = st.form_submit_button()
+
+    reset = st.button("Another Quiz?")
+    if reset:
+        if 'quiz_count' not in st.session_state:
+            st.session_state['quiz_count'] = 0
+        st.session_state['quiz_count'] += 1
+        st.cache_data.clear()
+        st.experimental_rerun()
