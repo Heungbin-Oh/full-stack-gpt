@@ -291,6 +291,7 @@ else:
                 "Select an option.",
                 [answer["answer"] for answer in question["answers"]],
                 index=None,
+                # To avoid duplication err when generating another quiz
                 key=f"question_{idx}_{st.session_state.get('quiz_count', 0)}"
             )
             if {"answer": value, "correct": True} in question["answers"]:
