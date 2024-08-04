@@ -16,6 +16,10 @@ st.set_page_config(
     page_icon="📃",
 )
 
+# Initialize session state for messages
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
 # Callback handler for streaming responses
 
 
