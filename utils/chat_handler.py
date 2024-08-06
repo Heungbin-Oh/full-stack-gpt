@@ -2,11 +2,12 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationSummaryBufferMemory
 
-from siteGPT.utils import ChatCallbackHandler
+from utils.utils import ChatCallbackHandler
 
 
 llm = ChatOpenAI(
     temperature=0.1,
+    model="gpt-4o-mini",
 )
 
 memory = ConversationSummaryBufferMemory(
@@ -73,6 +74,33 @@ def get_answers(input):
     }
 
 
+def get_answers_no_src(input):
+    docs = input["docs"]
+    question = input["question"]
+    chat_history = input["chat_history"]
+
+    llm.streaming = False
+    llm.callbacks = None
+    answers_chain = answers_prompt | llm
+    return {
+        "question": question,
+        "chat_history": chat_history,
+        "answers": [
+            {
+                "answer": answers_chain.invoke(
+                    {
+                        "question": question,
+                        "context": doc.page_content,
+                        "chat_history": chat_history,
+                    }
+                ).content,
+
+            }
+            for doc in docs
+        ],
+    }
+
+
 choose_prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -81,6 +109,21 @@ choose_prompt = ChatPromptTemplate.from_messages(
             Use ONLY the following pre-existing answers to answer the user's question.
             Use the answers that have the highest score (more helpful) and favor the most recent ones.
             Cite sources and return the sources of the answers as they are, do not change them.
+            Answers: {answers}
+            """,
+        ),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("human", "{question}"),
+    ]
+)
+choose_prompt_no_src = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+            Use ONLY the following pre-existing answers to answer the user's question.
+            Use the answers that have the highest score (more helpful) and favor the most recent ones.
+            
             Answers: {answers}
             """,
         ),
@@ -102,6 +145,30 @@ def choose_answer(inputs):
 
     condensed = "\n\n".join(
         f"Answer: {answer['answer']}\nSource: {answer['source']}\n"
+        for answer in answers
+    )
+
+    return choose_chain.invoke(
+        {
+            "answers": condensed,
+            "question": question,
+            "chat_history": chat_history,
+        }
+    )
+
+
+def choose_answer_no_src(inputs):
+    answers = inputs["answers"]
+    question = inputs["question"]
+    chat_history = inputs["chat_history"]
+
+    llm.streaming = True
+    llm.callbacks = [ChatCallbackHandler()]
+
+    choose_chain = choose_prompt_no_src | llm
+
+    condensed = "\n\n".join(
+        f"Answer: {answer['answer']}\n"
         for answer in answers
     )
 

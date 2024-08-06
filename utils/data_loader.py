@@ -8,6 +8,10 @@ from langchain.schema import Document
 from .chat_handler import memory
 
 
+def load_memory(_):
+    return memory.load_memory_variables({})["chat_history"]
+
+
 def parse_page(soup):
     header = soup.find("header")
     footer = soup.find("footer")

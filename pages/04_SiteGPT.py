@@ -3,9 +3,9 @@ import requests
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
 
-from siteGPT.chat_handler import get_answers, choose_answer, memory
-from siteGPT.data_loader import load_website, find_history
-from siteGPT.utils import paint_history, send_message
+from utils.chat_handler import get_answers, choose_answer, memory
+from utils.data_loader import load_website, find_history, load_memory
+from utils.utils import paint_history, send_message
 
 st.set_page_config(page_title="Site GPT", page_icon="🖥️")
 st.title("Site GPT")
@@ -16,10 +16,6 @@ st.markdown(
     Start by writing the URl of the website on the sidebar.
 """
 )
-
-
-def load_memory(_):
-    return memory.load_memory_variables({})["chat_history"]
 
 
 with st.sidebar:

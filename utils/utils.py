@@ -1,7 +1,14 @@
 import streamlit as st
 from langchain.callbacks.base import BaseCallbackHandler
-
-
+from dotenv import load_dotenv
+import os
+def load_api():
+    # Load environment variables from .env file
+    load_dotenv()
+    # Check if the environment variable is loaded
+    os.getenv('OPENAI_API_KEY')
+    os.getenv('LANGSMITH_API_KEY')
+    
 def save_message(msg, role):
     st.session_state["messages"].append({"msg": msg, "role": role})
 
