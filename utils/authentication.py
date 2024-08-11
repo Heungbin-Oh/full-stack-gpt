@@ -86,9 +86,9 @@ def signup():
         admin_key = st.text_input(
             "Admin Key", type='password', key="admin_key_input", placeholder="Enter Admin key...      Hint: My Birthday!")
         new_user = st.text_input(
-            "Username", key="signup_username", placeholder="Enter username")
+            "Username", key="signup_username", placeholder="Enter Username")
         new_password = st.text_input(
-            "Password", type='password', key="signup_password", placeholder="Enter password")
+            "Password", type='password', key="signup_password", placeholder="Enter Password")
         submit_button = st.form_submit_button(label="Submit")
 
         if submit_button:
