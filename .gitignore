@@ -6,7 +6,7 @@ notebook.ipynb
 crew_ai/
 practice/
 
-# .cache/files/
+.cache/
 # .cache/embeddings/
 # .cache/chunks/
 # .cache/history/
