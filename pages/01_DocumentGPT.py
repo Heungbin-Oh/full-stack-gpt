@@ -9,7 +9,6 @@ from langchain.vectorstores.faiss import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
 import streamlit as st
-import os
 from utils.authentication import check_login
 
 # Streamlit page configuration
@@ -17,9 +16,7 @@ st.set_page_config(
     page_title="DocumentGPT",
     page_icon="📃",
 )
-# Ensure the directory exists
-os.makedirs("./.cache/files", exist_ok=True)
-os.makedirs("./.cache/embeddings", exist_ok=True)
+
 # Check if the user is logged in
 check_login()
 

@@ -1,11 +1,15 @@
 import streamlit as st
 from utils.authentication import check_login
+from utils.utils import make_dir
 
 # Set up the page configuration
 st.set_page_config(
     page_title="FullstackGPT Home",
     page_icon="🤖",
 )
+
+# To store cache data, make sure the folder exist
+make_dir()
 # Check if the user is logged in
 check_login()
 

@@ -2,13 +2,28 @@ import streamlit as st
 from langchain.callbacks.base import BaseCallbackHandler
 from dotenv import load_dotenv
 import os
+
+# To store cache data, make sure the folder exist
+
+
+def make_dir():
+    os.makedirs("./.cache/files", exist_ok=True)
+    os.makedirs("./.cache/embeddings", exist_ok=True)
+    os.makedirs("./.cache/chunks", exist_ok=True)
+    os.makedirs("./.cache/history", exist_ok=True)
+    os.makedirs("./.cache/private_embeddings", exist_ok=True)
+    os.makedirs("./.cache/private_files", exist_ok=True)
+    os.makedirs("./.cache/quiz_files", exist_ok=True)
+
+
 def load_api():
     # Load environment variables from .env file
     load_dotenv()
     # Check if the environment variable is loaded
     os.getenv('OPENAI_API_KEY')
     os.getenv('LANGSMITH_API_KEY')
-    
+
+
 def save_message(msg, role):
     st.session_state["messages"].append({"msg": msg, "role": role})
 
