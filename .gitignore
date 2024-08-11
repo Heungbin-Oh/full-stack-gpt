@@ -2,13 +2,14 @@ env/
 .env
 files/
 .streamlit/secrets.toml
-.cache/files/
-.cache/embeddings/
-.cache/chunks/
-.cache/history/
-.cache/private_embeddings/
-.cache/private_files/
-.cache/quiz_files/
 notebook.ipynb
 crew_ai/
 practice/
+
+# .cache/files/
+# .cache/embeddings/
+# .cache/chunks/
+# .cache/history/
+# .cache/private_embeddings/
+# .cache/private_files/
+# .cache/quiz_files/
