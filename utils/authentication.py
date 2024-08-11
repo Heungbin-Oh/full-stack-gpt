@@ -59,7 +59,7 @@ def login():
     st.subheader("Login")
     with st.form(key='login_form'):
         username = st.text_input(
-            "User Name", key="login_username", placeholder="Enter username")
+            "User Name", key="login_username", placeholder="Enter Username")
         password = st.text_input(
             "Password", type='password', key="login_password", placeholder="Enter Password")
         submit_button = st.form_submit_button(label="Login")
