@@ -8,6 +8,7 @@ from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
 from langchain.agents import initialize_agent, AgentType
 from langchain.utilities import DuckDuckGoSearchAPIWrapper
+from utils.authentication import check_login
 
 llm = ChatOpenAI(temperature=0.1, model_name="gpt-4o-mini")
 
@@ -118,6 +119,8 @@ st.set_page_config(
     page_title="InvestorGPT",
     page_icon="💼",
 )
+# Check if the user is logged in
+check_login()
 
 st.markdown(
     """

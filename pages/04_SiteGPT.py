@@ -2,10 +2,11 @@ import streamlit as st
 import requests
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
-
+# utils
 from utils.chat_handler import get_answers, choose_answer, memory
 from utils.data_loader import load_website, find_history, load_memory
 from utils.utils import paint_history, send_message
+from utils.authentication import check_login
 
 st.set_page_config(page_title="Site GPT", page_icon="🖥️")
 st.title("Site GPT")
@@ -16,7 +17,8 @@ st.markdown(
     Start by writing the URl of the website on the sidebar.
 """
 )
-
+# Check if the user is logged in
+check_login()
 
 with st.sidebar:
     url = st.text_input("Write down a URL",

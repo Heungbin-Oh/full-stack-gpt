@@ -8,11 +8,14 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOllama
 from langchain.callbacks.base import BaseCallbackHandler
 import streamlit as st
+from utils.authentication import check_login
 
 st.set_page_config(
     page_title="PrivateGPT",
     page_icon="📃",
 )
+# Check if the user is logged in
+check_login()
 
 
 class ChatCallbackHandler(BaseCallbackHandler):

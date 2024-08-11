@@ -9,6 +9,7 @@ from langchain.callbacks import StreamingStdOutCallbackHandler
 import streamlit as st
 from langchain.retrievers import WikipediaRetriever
 from langchain.schema import BaseOutputParser, output_parser
+from utils.authentication import check_login
 
 
 # Custom JSON output parser class
@@ -25,6 +26,8 @@ st.set_page_config(
     page_title="QuizGPT",
     page_icon="❓",
 )
+# Check if the user is logged in
+check_login()
 
 # Streamlit title
 st.title("QuizGPT")

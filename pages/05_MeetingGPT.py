@@ -18,7 +18,7 @@ from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
 from utils.utils import paint_history, send_message
 from utils.chat_handler import get_answers_no_src, choose_answer_no_src, memory
 from utils.data_loader import find_history, load_memory
-
+from utils.authentication import check_login
 
 llm = ChatOpenAI(
     temperature=0.1,
@@ -102,6 +102,8 @@ st.set_page_config(
     page_title="MeetingGPT",
     page_icon="💼",
 )
+# Check if the user is logged in
+check_login()
 
 st.markdown(
     """

@@ -3,3 +3,5 @@ env/
 files/
 .cache/
 .streamlit/secrets.toml
+notebook.ipynb
+crew_ai/
