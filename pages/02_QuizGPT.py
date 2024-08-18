@@ -316,4 +316,4 @@ else:
             st.session_state['quiz_count'] = 0
         st.session_state['quiz_count'] += 1
         st.cache_data.clear()
-        st.experimental_rerun()
+        st.rerun()
