@@ -1,6 +1,5 @@
 # Fullstack GPT
-
-![alt text](GPT_image.jpg)
+![GPT_image](https://github.com/user-attachments/assets/fda87059-e5ef-4e4e-a612-1b8dc2b0af96)
 
 Created 6 Fullstack GPT Web Services using OpenAI's GPT-4o mini, LangChain, and Streamlit; DocumentGPT, QuizGPT, PrivateGPT, SiteGPT, MeetingGPT, and InvestorGPT.
 
