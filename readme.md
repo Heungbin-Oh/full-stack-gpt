@@ -1,37 +1,28 @@
 # Fullstack GPT
 
-A Streamlit application to interact with documents, audio files, etc using OpenAI's GPT-4o mini and LangChain.
+![alt text](GPT_image.jpg)
 
-## Setup
+Created 6 Fullstack GPT Web Services using OpenAI's GPT-4o mini, LangChain, and Streamlit; DocumentGPT, QuizGPT, PrivateGPT, SiteGPT, MeetingGPT, and InvestorGPT.
 
-1. **Clone the repository**:
+Deployment Link: https://full-stack-gpt-heungbin-oh.streamlit.app/
 
-   ```bash
-   git clone https://github.com/yourusername/document-gpt.git
-   cd document-gpt
-   ```
+## What Used in the Project
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Create a `.streamlit/secrets.toml` file** to save API keys; OPENAI_API_KEY, LANGCHAIN_API_KEY:
-   ```toml
-   OPENAI_API_KEY = "your_api_key"
-   LANGCHAIN_TRACING_V2 = true
-   LANGCHAIN_ENDPOINT = "https://api.smith.langchain.com"
-   LANGCHAIN_API_KEY = "your_api_key"
-   LANGCHAIN_PROJECT = "Fullstack-GPT"
-   ADMIN_KEY="you_can_set_your_admin_key_to_make_new_account"
-   ```
-4. **Create a `.streamlit/config.toml` file** to configure Streamlit settings (optional):
+- **Python & OpenAI API**: Selected to practice and understand about Langchain and Lage Language Model model.
+- **Streamlit Framework**: Selected to build UI with Python code and to deploy the app to the Streamlit Cloud.
 
-   ```toml
-   [server]
-   headless = true
-   ```
+## Features
 
-5. **Run the Streamlit app**:
-   ```bash
-   streamlit run Home.py
-   ```
+- Used 3 different chain methods; Stuff, Re-Rank, Refine chain.
+- Utilized an Agent from Langchain to search for the company information.
+- Used Embeddings and Vector store to reduce memory usage.
+
+## Challenges & Future Improvements
+
+### Challenges:
+
+Had difficulty with User Authentication. I can simply follow the other things with the documentation of Langchain. So, there was not so much difficulty. On the Other hand, for the user authentication, I have never created this thing. Therefore, I used a simple database with SQLite and made it a util function.
+
+### Future Improvements:
+
+Implement a new service with ChatGPT Plugin using FastAPI. By using the plugin, I can use authentication service from it and reduce the length of my code.
