@@ -2,9 +2,9 @@ from .chat_handler import memory
 from langchain.schema import Document
 from langchain.embeddings import OpenAIEmbeddings
 import streamlit as st
-from langchain_community.document_loaders import SitemapLoader
+from langchain.document_loaders import SitemapLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores import FAISS
 
 
 def load_memory(_):
