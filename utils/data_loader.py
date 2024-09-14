@@ -1,6 +1,6 @@
 from .chat_handler import memory
 from langchain.schema import Document
-from langchain_openai import OpenAIEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 import streamlit as st
 from langchain_community.document_loaders import SitemapLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
