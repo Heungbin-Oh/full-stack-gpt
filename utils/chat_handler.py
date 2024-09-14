@@ -1,4 +1,4 @@
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationSummaryBufferMemory
 
@@ -7,7 +7,7 @@ from utils.utils import ChatCallbackHandler
 
 llm = ChatOpenAI(
     temperature=0.1,
-    model="gpt-4o-mini",
+    model="gpt-4",
 )
 
 memory = ConversationSummaryBufferMemory(

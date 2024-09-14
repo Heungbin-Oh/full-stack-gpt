@@ -10,7 +10,7 @@ from langchain.agents import initialize_agent, AgentType
 from langchain.utilities import DuckDuckGoSearchAPIWrapper
 from utils.authentication import check_login
 
-llm = ChatOpenAI(temperature=0.1, model_name="gpt-4o-mini")
+llm = ChatOpenAI(temperature=0.1, model_name="gpt-4")
 
 alpha_vantage_api_key = os.environ.get("ALPHA_VANTAGE_API_KEY")
 

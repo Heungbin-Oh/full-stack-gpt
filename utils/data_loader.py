@@ -1,11 +1,10 @@
-import streamlit as st
-from langchain.document_loaders import SitemapLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores.faiss import FAISS
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.schema import Document
-
 from .chat_handler import memory
+from langchain.schema import Document
+from langchain_openai import OpenAIEmbeddings
+import streamlit as st
+from langchain_community.document_loaders import SitemapLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
 
 
 def load_memory(_):

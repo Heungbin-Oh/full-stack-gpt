@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
-from langchain.chat_models import ChatOpenAI
 
 # utils
 from utils.chat_handler import get_answers, choose_answer, memory
