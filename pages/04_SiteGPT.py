@@ -9,11 +9,10 @@ from utils.utils import paint_history, send_message
 from utils.authentication import check_login
 
 st.set_page_config(page_title="Site GPT", page_icon="🖥️")
-st.title("Site GPT")
-
 # Check if the user is logged in
 check_login()
 
+st.title("Site GPT")
 st.markdown(
     """
     Ask questions about the content of a website.

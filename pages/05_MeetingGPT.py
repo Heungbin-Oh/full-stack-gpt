@@ -15,11 +15,16 @@ from langchain.embeddings import OpenAIEmbeddings, CacheBackedEmbeddings
 from langchain.storage import LocalFileStore
 from langchain.schema.runnable import RunnablePassthrough, RunnableLambda
 
+from utils.authentication import check_login
+
 llm = ChatOpenAI(
     temperature=0.1,
 )
 
 st.set_page_config(page_title="Meeting GPT", page_icon="💼")
+# Check if the user is logged in
+check_login()
+
 st.title("Meeting GPT")
 st.markdown(
     """
