@@ -104,7 +104,7 @@ def choose_answer(inputs):
     choose_chain = choose_prompt | llm
 
     condensed = "\n\n".join(
-        f"{answer['answer']}\nSource: {answer['source']}\n"
+        f"{answer['answer'].replace('$', 'USD ') if '$' in answer['answer'] else answer['answer']}\nSource: {answer['source']}\n"
         for answer in answers
     )
 
