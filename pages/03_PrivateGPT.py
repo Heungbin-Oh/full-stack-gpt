@@ -105,6 +105,12 @@ Welcome!
             
 Use this chatbot to ask questions to an AI about your files!
 
+But, First! You have to download Ollma (https://ollama.com/)
+
+Run this code in your cmd to download mistral model! ('ollama run mistral')
+
+Finally, you can use the app privately without the internet!!
+
 Upload your files on the sidebar.
 """
 )
