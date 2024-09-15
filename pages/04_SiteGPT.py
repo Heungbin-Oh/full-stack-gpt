@@ -10,6 +10,10 @@ from utils.authentication import check_login
 
 st.set_page_config(page_title="Site GPT", page_icon="🖥️")
 st.title("Site GPT")
+
+# Check if the user is logged in
+check_login()
+
 st.markdown(
     """
     Ask questions about the content of a website.
@@ -17,8 +21,7 @@ st.markdown(
     Start by writing the URl of the website on the sidebar.
 """
 )
-# Check if the user is logged in
-check_login()
+
 
 with st.sidebar:
     url = st.text_input("Write down a URL",

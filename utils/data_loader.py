@@ -8,7 +8,13 @@ from langchain.vectorstores import FAISS
 
 
 def load_memory(_):
-    return memory.load_memory_variables({})["chat_history"]
+    full_chat_history = memory.load_memory_variables({})["chat_history"]
+
+    user_messages = [
+        msg for msg in full_chat_history
+        if msg.type == "human" or getattr(msg, "role", None) == "user"
+    ]
+    return user_messages
 
 
 def parse_page(soup):
