@@ -51,9 +51,14 @@ def get_answers(input):
     question = input["question"]
     chat_history = input["chat_history"]
 
-    llm.streaming = False
-    llm.callbacks = None
-    answers_chain = answers_prompt | llm
+    llm_local = ChatOpenAI(
+        temperature=0.1,
+        model="gpt-4",
+        streaming=False,
+        callbacks=None
+    )
+
+    answers_chain = answers_prompt | llm_local
     return {
         "question": question,
         "chat_history": chat_history,
@@ -79,9 +84,13 @@ def get_answers_no_src(input):
     question = input["question"]
     chat_history = input["chat_history"]
 
-    llm.streaming = False
-    llm.callbacks = None
-    answers_chain = answers_prompt | llm
+    llm_local = ChatOpenAI(
+        temperature=0.1,
+        model="gpt-4",
+        streaming=True,
+        callbacks=[ChatCallbackHandler()]
+    )
+    answers_chain = answers_prompt | llm_local
     return {
         "question": question,
         "chat_history": chat_history,

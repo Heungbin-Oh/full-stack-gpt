@@ -7,7 +7,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
 from langchain.agents import initialize_agent, AgentType
-from langchain.utilities import DuckDuckGoSearchAPIWrapper
+from langchain.utilities import SerpAPIWrapper
 from utils.authentication import check_login
 
 llm = ChatOpenAI(temperature=0.1, model_name="gpt-4")
@@ -33,8 +33,11 @@ class StockMarketSymbolSearchTool(BaseTool):
     ] = StockMarketSymbolSearchToolArgsSchema
 
     def _run(self, query):
-        ddg = DuckDuckGoSearchAPIWrapper()
-        return ddg.run(query)
+        serp_api_key = os.environ.get("SERPAPI_API_KEY")
+        if not serp_api_key:
+            return "SerpAPI API key not found. Please set the SERPAPI_API_KEY environment variable."
+        serp = SerpAPIWrapper(serpapi_api_key=serp_api_key)
+        return serp.run(query)
 
 
 class CompanyOverviewArgsSchema(BaseModel):
