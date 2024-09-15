@@ -3,8 +3,7 @@
 
 Created 6 Fullstack GPT Web Services using OpenAI's GPT-4o mini, LangChain, and Streamlit; DocumentGPT, QuizGPT, PrivateGPT, SiteGPT, MeetingGPT, and InvestorGPT.
 
-#### **!admin code to make an account!; 0622**
-###### Deployment Link: https://full-stack-gpt-heungbin-oh.streamlit.app/
+#### **!admin code to make an account!; 0622** ###### Deployment Link: https://full-stack-gpt-heungbin-oh.streamlit.app/
 
 
 ## What Used in the Project
