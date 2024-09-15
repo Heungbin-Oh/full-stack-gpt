@@ -1,6 +1,6 @@
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.memory import ConversationSummaryBufferMemory
+from langchain.memory import ConversationBufferMemory
 
 from utils.utils import ChatCallbackHandler
 
@@ -10,7 +10,9 @@ llm = ChatOpenAI(
     model="gpt-4",
 )
 
-memory = ConversationSummaryBufferMemory(
+# using ConversationBufferMemory not ConversationSummaryBufferMemory
+# Due to compatability with langchain==0.0.332
+memory = ConversationBufferMemory(
     llm=llm,
     max_token_limit=150,
     memory_key="chat_history",
@@ -102,7 +104,7 @@ def choose_answer(inputs):
     choose_chain = choose_prompt | llm
 
     condensed = "\n\n".join(
-        f"Answer: {answer['answer']}\nSource: {answer['source']}\n"
+        f"{answer['answer']}\nSource: {answer['source']}\n"
         for answer in answers
     )
 

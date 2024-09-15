@@ -2,19 +2,13 @@ from .chat_handler import memory
 from langchain.schema import Document
 from langchain.embeddings import OpenAIEmbeddings
 import streamlit as st
-from langchain.document_loaders import SitemapLoader
+from langchain_community.document_loaders import SitemapLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 
 def load_memory(_):
-    full_chat_history = memory.load_memory_variables({})["chat_history"]
-
-    user_messages = [
-        msg for msg in full_chat_history
-        if msg.type == "human" or getattr(msg, "role", None) == "user"
-    ]
-    return user_messages
+    return memory.load_memory_variables({})["chat_history"]
 
 
 def parse_page(soup):
@@ -50,10 +44,24 @@ def find_history(query):
         for item in temp
     ]
     try:
+        # Create vector store from the documents
         vector_store = FAISS.from_documents(docs, OpenAIEmbeddings())
-        found_docs = vector_store.similarity_search(query)
-        candidate = found_docs[0].page_content.split("\n")[1]
-        return candidate.replace("output:", "")
+
+        # Perform similarity search
+        found_docs_with_scores = vector_store.similarity_search_with_relevance_scores(
+            query, k=3)
+
+        # Define a threshold for the score
+        threshold = 0.8
+        relevant_docs = [doc for doc,
+                         score in found_docs_with_scores
+                         if score >= threshold]
+        # If a relevant document is found, return the most similar one
+        if relevant_docs:
+            candidate = relevant_docs[0].page_content.split("\n")[1]
+            return candidate.replace("output:", "")
+        else:
+            return None
     except IndexError:
         return None
 
