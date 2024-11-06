@@ -84,7 +84,7 @@ def signup():
 
     with st.form(key='signup_form'):
         admin_key = st.text_input(
-            "Admin Key", type='password', key="admin_key_input", placeholder="Enter Admin key...      Hint: My Birthday!")
+            "Admin Key", type='password', key="admin_key_input", placeholder="Enter Admin key...      Hint: My Birthday!: 0622")
         new_user = st.text_input(
             "Username", key="signup_username", placeholder="Enter Username")
         new_password = st.text_input(
